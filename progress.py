@@ -15,10 +15,10 @@ class ProgressBar(object):
         c2 = complex(0.6, 0.9)
         out = []
         x_res, y_res = 80, 30
-        for i in xrange(y_res + 1):
-            y = c1.imag + i * (c2.imag - c1.imag) / float(y_res)
-            for j in xrange(x_res + 1):
-                x = c1.real + j * (c2.real - c1.real) / float(x_res)
+        for i in xrange(y_res):
+            y = c1.imag + i * (c2.imag - c1.imag) / float(y_res - 1)
+            for j in xrange(x_res):
+                x = c1.real + j * (c2.real - c1.real) / float(x_res - 1)
                 v = m(complex(x,y))
                 if v:
                     v = v % 20
