@@ -14,7 +14,7 @@ class ProgressBar(object):
         c1 = complex(-2.2,-0.9)
         c2 = complex(0.6, 0.9)
         out = []
-        x_res, y_res = 80, 30
+        x_res, y_res = 80, 31
         for i in xrange(y_res):
             y = c1.imag + i * (c2.imag - c1.imag) / float(y_res - 1)
             for j in xrange(x_res):
