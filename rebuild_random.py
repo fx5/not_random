@@ -1,13 +1,16 @@
 import gzip
 import random
 from itertools import imap
-
+from progress import ProgressBar
 
 print "Loading Magic"
 f = gzip.GzipFile("magic_data","r")
 magic = eval(f.read())
 f.close()
 print "Done."
+
+print "Working...."
+progress = ProgressBar()
 
 def rebuild_random(data):
     assert len(data) >= 3360
@@ -19,7 +22,7 @@ def rebuild_random(data):
 
     state = []
     for i in xrange(0, 624):
-        print "REBUILDING RANDOM-POOL ["+ ("#" * (i // 10)).ljust(62) +"]"
+        progress.progress(i / 623.)
         val = 0
         data = magic[i % 2]
         for bit in data:

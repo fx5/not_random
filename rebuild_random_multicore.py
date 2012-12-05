@@ -2,13 +2,16 @@ import gzip
 import random
 import multiprocessing
 from itertools import imap
-
+from progress import ProgressBar
 
 print "Loading Magic"
 f = gzip.GzipFile("magic_data","r")
 magic = eval(f.read())
 f.close()
 print "Done."
+
+print "Working...."
+progress = ProgressBar()
 
 def calc(i):
     def getbit(bit):
@@ -33,11 +36,12 @@ def rebuild_random(data):
     stepsize = multiprocessing.cpu_count() * 3
 
     for i in xrange(0, 624, stepsize):
-        print "REBUILDING RANDOM-POOL ["+ ("#" * (i // 10)).ljust(62) +"]"
+        progress.progress(i / 623.)
         res = pool.map(calc, range(i, min(624, i + stepsize)))
         state.extend(res)
         #print val, real_state[i]
 
+    progress.progress(1)
     state.append(0)
     ran = random.Random()
     ran.setstate((3, tuple(state),None))
