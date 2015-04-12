@@ -2,13 +2,12 @@ This is a demonstration how to rebuild the state of a Mersenne Twister by using 
 
 For details see https://spideroak.com/blog/20121205114003-exploit-information-leaks-in-random-numbers-from-python-ruby-and-php
 
-The Mersenne Twister implementation is in twister.py.
+The Mersenne Twister implementation is in twister.py. rebuild_random.py demonstrates that it works.
 
-rebuild_random.py and rebuild_random_multicore.py demonstrate that it works.
+Boring output of the rebuild_random.py:
 
-Boring output of the example program:
 ```
-$ python rebuild_random_multicore.py 
+$ python rebuild_random.py 
 Loading Magic
 Done.
 REBUILDING RANDOM-POOL [                                                              ]
