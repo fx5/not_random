@@ -27,9 +27,9 @@ def _andint(v, mask):
     return neu
 
 class Twister(object):
-    def __init__(self):
+    def __init__(self, offset=0):
         self.tw = []
-        self.offset = 0
+        self.offset = offset
         pos = 0
         for i in xrange(N):
             self.tw.append([frozenset((i,)) for i in xrange(pos, pos+32)])
