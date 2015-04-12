@@ -23,8 +23,11 @@ def rebuild_random(magic, data):
     for bit_pos, bit_magic in enumerate(magic):
         progress.progress((bit_pos + 1.) / len(magic))
         magic_vals = (ord(d) for d in bit_magic)
+        # Magic-data AND MT-output
         xor_data = (a & b for a, b in izip(magic_vals, data_vals))
+        # XOR all the bytes
         xor_data = reduce(lambda a, b: a ^ b, xor_data, 0)
+        # XOR the bits of the result-byte
         xor_data = reduce(lambda a, b: a ^ b,
                           (xor_data >> i for i in xrange(8)))
         xor_data &= 1
@@ -57,7 +60,7 @@ def main():
 
     need_bytes = max(len(d) for d in magic)
 
-    print "Working.... I need %d bytes from the MT" % (need_bytes,)
+    print "Working.... I need %d bytes from MT" % (need_bytes,)
 
     # Shuffle the random-state a little bit
     random_string(random.randint(0, 10000))
