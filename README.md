@@ -1,13 +1,15 @@
-This is a demonstration how to rebuild the internal state of a Mersenne Twister by using only parts of its output. In this example it uses 8 bits per 64 bit MT-output.
+This is a demonstration how to rebuild the internal state of a Mersenne Twister by using only parts of its output. In this example it uses 8 bits per 64 bit MT-output. (This is what you get from
+`random.randint(0, 255)`.
 
 For details see https://spideroak.com/blog/20121205114003-exploit-information-leaks-in-random-numbers-from-python-ruby-and-php
 
 The Mersenne Twister implementation is in twister.py. The script `gen_magic_data.py` precalculates the
-`magic_data`. (This may take a while, so `magic_data` is already included.)
+`magic_data`. (This may take a while, so the precalculated `magic_data` is already included.)
 
-rebuild_random.py demonstrates that it works.
+`rebuild_random.py` demonstrates that it works. It reads 3115 bytes from `random.randint(0, 255)` to
+infer the internal state of the Mersenne Twister.
 
-Boring output of the rebuild_random.py:
+Boring output of `rebuild_random.py`:
 
 ```
 $ python ./rebuild_random.py 
