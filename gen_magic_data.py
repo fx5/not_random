@@ -6,6 +6,7 @@ import cPickle as pickle
 from twister import Twister
 from bitarray import bitarray
 from util import N
+import sys
 
 
 def iter_bits_8_bit(twister):
@@ -17,7 +18,7 @@ def iter_bits_8_bit(twister):
     while True:
         int32 = twister.getint32()
         _ = twister.getint32()
-        for bit in int32[:8]:
+        for bit in int32[:output_bits_length]:
             yield bit
 
 
@@ -49,7 +50,7 @@ def get_verifier(state, verify_data):
             return
         count[0] = 0
         bitfield1, bitfield2 = rule
-        b1 = 1 & sum((verify_data[x // 8] >> (7 - x % 8)) & 1
+        b1 = 1 & sum((verify_data[x // output_bits_length] >> (output_bits_length - 1 - x % output_bits_length)) & 1
                      for x in bitfield1.itersearch(bitarray([1])))
         b2 = 1 & sum((state[x // 32] >> (31 - x % 32)) & 1
                      for x in bitfield2.itersearch(bitarray([1])))
@@ -162,19 +163,44 @@ def save_data(data):
 
     :param list[(bitarray, bitarray)] data: our rulebase
     """
+    print "Masking bits to bytes...."
+    data_masked = []
+    mask = "".zfill(8 - output_bits_length)
+    for line_bitarray, _ in data:
+        line_string = line_bitarray.to01()
+        line_string = line_string.rstrip("0")
+        line_string_masked = [mask + line_string[i:i+output_bits_length] for i in range(0, len(line_string), output_bits_length)]
+        line_bitarray_masked = bitarray("".join(line_string_masked))
+        data_masked.append(line_bitarray_masked)
+    print "done"
+
     print "Saving data...."
-    with closing(gzip.GzipFile("magic_data", "w")) as f:
-        pickle.dump([b.tobytes().rstrip("\0") for b, _ in data], f)
+    with closing(gzip.GzipFile("magic_data_"+str(output_bits_length), "w")) as f:
+        pickle.dump([b.tobytes().rstrip("\0") for b in data_masked], f)
     print "Done."
 
 
 def main():
     """Main function"""
-    bits1 = 3500 * 8
+    global output_bits_length
+
+    # 1 optional argument : output bits length
+    if len(sys.argv) > 1:
+        output_bits_length = int(sys.argv[1])
+        if output_bits_length < 1 or output_bits_length > 8:
+            print "Argument %d bits output invalid, currently supported : integer between 1 and 8 inclusive" % output_bits_length
+            return
+        print "Using argument %d bits output" % output_bits_length
+    else:
+        output_bits_length = 8
+        print "Using default 8 bits output"
+
+    # bits1 = 26880, a little bit over 19668 and divisible by all output bits possible, originally 3500*8 for 8 bits
+    bits1 = 2 * 3 * 4 * 4 * 5 * 7 * 8
     bits2 = N * 32
     rnd = random.Random()
     rng_state = rnd.getstate()[1][:624]
-    rng_data = [rnd.randint(0, 255) for _ in xrange(bits1/8)]
+    rng_data = [rnd.randint(0, (2 **output_bits_length) - 1) for _ in xrange(bits1/output_bits_length)]
     verify = get_verifier(rng_state, rng_data)
 
     data = generate_output(bits1, bits2, verify)
